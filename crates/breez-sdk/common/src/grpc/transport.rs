@@ -1,5 +1,6 @@
 use anyhow::Result;
 use std::time::Duration;
+use rustls::crypto::ring;
 use tonic::transport::ClientTlsConfig;
 
 pub type Transport = tonic::transport::Channel;
@@ -11,6 +12,7 @@ pub struct GrpcClient {
 
 impl GrpcClient {
     pub fn new(url: &str, user_agent: &str) -> Result<Self> {
+        let _ = ring::default_provider().install_default();
         Ok(Self {
             inner: Self::create_endpoint(url, user_agent)?.connect_lazy(),
         })

@@ -41,7 +41,10 @@ unicode-normalization = "0.1.25"
 
 # Non-Wasm dependencies
 [target.'cfg(not(all(target_family = "wasm", target_os = "unknown")))'.dependencies]
+hyper-util = { version = "0.1.16", features = ["tokio"] }
 rustls.workspace = true
+tokio = { workspace = true, features = ["net"] }
+tokio-rustls = "0.26.2"
 tonic = { workspace = true, features = [
     "channel",
     "codegen",

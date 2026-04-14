@@ -28,13 +28,7 @@ impl DefaultConnectionManager {
     pub fn new() -> Self {
         #[cfg(not(all(target_family = "wasm", target_os = "unknown")))]
         {
-            // Install rustls ring crypto provider for native targets only
-            if rustls::crypto::ring::default_provider()
-                .install_default()
-                .is_err()
-            {
-                tracing::warn!("Failed to install rustls crypto provider, ignoring error");
-            }
+            let _ = rustls::crypto::ring::default_provider().install_default();
         }
         let connections_map = HashMap::new();
         Self {
