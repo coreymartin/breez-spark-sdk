@@ -23,12 +23,12 @@ impl RTSyncSigner {
     ) -> Result<Self, bitcoin::bip32::Error> {
         let signing_path: DerivationPath = match network {
             Network::Mainnet => SIGNING_DERIVATION_PATH,
-            Network::Regtest => SIGNING_DERIVATION_PATH_TEST,
+            Network::Regtest | Network::Local => SIGNING_DERIVATION_PATH_TEST,
         }
         .parse()?;
         let encryption_path: DerivationPath = match network {
             Network::Mainnet => ENCRYPTION_DERIVATION_PATH,
-            Network::Regtest => ENCRYPTION_DERIVATION_PATH_TEST,
+            Network::Regtest | Network::Local => ENCRYPTION_DERIVATION_PATH_TEST,
         }
         .parse()?;
 

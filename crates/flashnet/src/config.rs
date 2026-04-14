@@ -22,7 +22,7 @@ impl FlashnetConfig {
                 network,
                 integrator_config,
             },
-            Network::Regtest | Network::Testnet | Network::Signet => Self {
+            Network::Regtest | Network::Local | Network::Testnet | Network::Signet => Self {
                 base_url: "https://api.amm.makebitcoingreatagain.dev".to_string(),
                 network,
                 integrator_config,

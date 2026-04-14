@@ -33,7 +33,7 @@ use super::VerifiableSecretShare;
 
 fn account_number(network: Network) -> u32 {
     match network {
-        Network::Regtest => 0,
+        Network::Regtest | Network::Local => 0,
         _ => 1,
     }
 }

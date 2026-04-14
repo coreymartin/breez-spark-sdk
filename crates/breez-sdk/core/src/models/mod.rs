@@ -501,6 +501,7 @@ impl FromStr for SparkHtlcStatus {
 pub enum Network {
     Mainnet,
     Regtest,
+    Local,
 }
 
 impl std::fmt::Display for Network {
@@ -508,6 +509,7 @@ impl std::fmt::Display for Network {
         match self {
             Network::Mainnet => write!(f, "Mainnet"),
             Network::Regtest => write!(f, "Regtest"),
+            Network::Local => write!(f, "Local"),
         }
     }
 }
@@ -516,7 +518,7 @@ impl From<Network> for BitcoinNetwork {
     fn from(network: Network) -> Self {
         match network {
             Network::Mainnet => BitcoinNetwork::Bitcoin,
-            Network::Regtest => BitcoinNetwork::Regtest,
+            Network::Regtest | Network::Local => BitcoinNetwork::Regtest,
         }
     }
 }
@@ -525,7 +527,9 @@ impl From<Network> for breez_sdk_common::network::BitcoinNetwork {
     fn from(network: Network) -> Self {
         match network {
             Network::Mainnet => breez_sdk_common::network::BitcoinNetwork::Bitcoin,
-            Network::Regtest => breez_sdk_common::network::BitcoinNetwork::Regtest,
+            Network::Regtest | Network::Local => {
+                breez_sdk_common::network::BitcoinNetwork::Regtest
+            }
         }
     }
 }
@@ -534,7 +538,7 @@ impl From<Network> for bitcoin::Network {
     fn from(network: Network) -> Self {
         match network {
             Network::Mainnet => bitcoin::Network::Bitcoin,
-            Network::Regtest => bitcoin::Network::Regtest,
+            Network::Regtest | Network::Local => bitcoin::Network::Regtest,
         }
     }
 }
@@ -546,6 +550,7 @@ impl FromStr for Network {
         match s {
             "mainnet" => Ok(Network::Mainnet),
             "regtest" => Ok(Network::Regtest),
+            "local" => Ok(Network::Local),
             _ => Err("Invalid network".to_string()),
         }
     }

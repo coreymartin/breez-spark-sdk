@@ -31,12 +31,14 @@ use crate::Network;
 const HRP_MAINNET: Hrp = Hrp::parse_unchecked("spark");
 const HRP_TESTNET: Hrp = Hrp::parse_unchecked("sparkt");
 const HRP_REGTEST: Hrp = Hrp::parse_unchecked("sparkrt");
+const HRP_LOCAL: Hrp = Hrp::parse_unchecked("sparkl");
 const HRP_SIGNET: Hrp = Hrp::parse_unchecked("sparks");
 
 // TODO: Remove legacy HRPs for silent payment addresses
 const HRP_LEGACY_MAINNET: Hrp = Hrp::parse_unchecked("sp");
 const HRP_LEGACY_TESTNET: Hrp = Hrp::parse_unchecked("spt");
 const HRP_LEGACY_REGTEST: Hrp = Hrp::parse_unchecked("sprt");
+const HRP_LEGACY_LOCAL: Hrp = Hrp::parse_unchecked("spl");
 const HRP_LEGACY_SIGNET: Hrp = Hrp::parse_unchecked("sps");
 
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
@@ -236,6 +238,7 @@ impl SparkAddress {
             Network::Mainnet => HRP_MAINNET,
             Network::Testnet => HRP_TESTNET,
             Network::Regtest => HRP_REGTEST,
+            Network::Local => HRP_LOCAL,
             Network::Signet => HRP_SIGNET,
         }
     }
@@ -245,6 +248,7 @@ impl SparkAddress {
             hrp if hrp == &HRP_MAINNET || hrp == &HRP_LEGACY_MAINNET => Ok(Network::Mainnet),
             hrp if hrp == &HRP_TESTNET || hrp == &HRP_LEGACY_TESTNET => Ok(Network::Testnet),
             hrp if hrp == &HRP_REGTEST || hrp == &HRP_LEGACY_REGTEST => Ok(Network::Regtest),
+            hrp if hrp == &HRP_LOCAL || hrp == &HRP_LEGACY_LOCAL => Ok(Network::Local),
             hrp if hrp == &HRP_SIGNET || hrp == &HRP_LEGACY_SIGNET => Ok(Network::Signet),
             _ => Err(AddressError::UnknownHrp(hrp.to_string())),
         }
@@ -441,6 +445,7 @@ fn get_magic_network_identifier(network: Network) -> Vec<u8> {
     let magic: i64 = match network {
         Network::Mainnet => 0xd9b4bef9,
         Network::Regtest => 0xdab5bffa,
+        Network::Local => 0xdab5bffa,
         Network::Testnet => 0x0709110b,
         Network::Signet => 0x40cf030a,
     };
@@ -620,6 +625,22 @@ mod tests {
         let original_address = SparkAddress::new(public_key, Network::Regtest, None);
 
         let address_string = original_address.to_address_string().unwrap();
+        let parsed_address = SparkAddress::from_str(&address_string).unwrap();
+
+        assert_eq!(
+            parsed_address.identity_public_key,
+            original_address.identity_public_key
+        );
+        assert_eq!(parsed_address.network, original_address.network);
+    }
+
+    #[test_all]
+    fn test_address_roundtrip_local() {
+        let public_key = create_test_public_key();
+        let original_address = SparkAddress::new(public_key, Network::Local, None);
+
+        let address_string = original_address.to_address_string().unwrap();
+        assert!(address_string.starts_with("sparkl1"));
         let parsed_address = SparkAddress::from_str(&address_string).unwrap();
 
         assert_eq!(

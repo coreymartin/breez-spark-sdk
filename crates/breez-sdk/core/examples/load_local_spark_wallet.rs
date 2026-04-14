@@ -44,7 +44,7 @@ async fn main() -> Result<()> {
         mnemonic,
         passphrase,
     };
-    let mut config = default_config(Network::Regtest);
+    let mut config = default_config(Network::Local);
     config.api_key = None;
     config.real_time_sync_server_url = None;
     config.lnurl_domain = None;

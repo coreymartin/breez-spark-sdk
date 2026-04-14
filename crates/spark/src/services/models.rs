@@ -37,7 +37,9 @@ impl From<crate::Network> for operator_rpc::spark::Network {
     fn from(network: crate::Network) -> Self {
         match network {
             crate::Network::Mainnet => operator_rpc::spark::Network::Mainnet,
-            crate::Network::Regtest => operator_rpc::spark::Network::Regtest,
+            crate::Network::Regtest | crate::Network::Local => {
+                operator_rpc::spark::Network::Regtest
+            }
             crate::Network::Testnet => operator_rpc::spark::Network::Testnet,
             crate::Network::Signet => operator_rpc::spark::Network::Signet,
         }
@@ -61,7 +63,7 @@ impl From<Network> for BitcoinNetwork {
             Network::Mainnet => BitcoinNetwork::Mainnet,
             Network::Testnet => BitcoinNetwork::Testnet,
             Network::Signet => BitcoinNetwork::Signet,
-            Network::Regtest => BitcoinNetwork::Regtest,
+            Network::Regtest | Network::Local => BitcoinNetwork::Regtest,
         }
     }
 }

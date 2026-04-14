@@ -53,6 +53,7 @@ fn is_transaction_preempted_error(error: &OperatorRpcError) -> bool {
 const HRP_STR_MAINNET: &str = "btkn";
 const HRP_STR_TESTNET: &str = "btknt";
 const HRP_STR_REGTEST: &str = "btknrt";
+const HRP_STR_LOCAL: &str = "btknl";
 const HRP_STR_SIGNET: &str = "btkns";
 
 pub const BURN_PUBLIC_KEY: &[u8; 33] = &[2; 33];
@@ -1208,6 +1209,7 @@ pub fn bech32m_encode_token_id(
         Network::Mainnet => HRP_STR_MAINNET,
         Network::Testnet => HRP_STR_TESTNET,
         Network::Regtest => HRP_STR_REGTEST,
+        Network::Local => HRP_STR_LOCAL,
         Network::Signet => HRP_STR_SIGNET,
     };
     let hrp = Hrp::parse_unchecked(hrp_str);
@@ -1229,6 +1231,7 @@ pub fn bech32m_decode_token_id(
         "btkn" => Network::Mainnet,
         "btknt" => Network::Testnet,
         "btknrt" => Network::Regtest,
+        "btknl" => Network::Local,
         "btkns" => Network::Signet,
         _ => return Err(ServiceError::Generic(format!("Invalid network: {hrp}"))),
     };
@@ -1955,6 +1958,21 @@ mod tests {
         );
 
         let decoded = super::bech32m_decode_token_id(&encoded, Some(Network::Regtest)).unwrap();
+        assert_eq!(decoded, raw_token_id);
+    }
+
+    #[test_all]
+    fn test_bech32m_encode_token_id_local() {
+        let raw_token_id =
+            hex::decode("ee2f1dc42cf0866420f2b0195bb3607199a730c85d7138214b6ad09b55e47542")
+                .unwrap();
+        let encoded = super::bech32m_encode_token_id(&raw_token_id, Network::Local).unwrap();
+        assert_eq!(
+            encoded,
+            "btknl1ach3m3pv7zrxgg8jkqv4hvmqwxv6wvxgt4cnsg2tdtgfk40yw4pqk3hu2t"
+        );
+
+        let decoded = super::bech32m_decode_token_id(&encoded, Some(Network::Local)).unwrap();
         assert_eq!(decoded, raw_token_id);
     }
 }

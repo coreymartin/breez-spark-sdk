@@ -178,7 +178,7 @@ pub async fn connect_with_signer(
 pub fn default_config(network: Network) -> Config {
     let lnurl_domain = match network {
         Network::Mainnet => Some("breez.tips".to_string()),
-        Network::Regtest => None,
+        Network::Regtest | Network::Local => None,
     };
     Config {
         api_key: None,

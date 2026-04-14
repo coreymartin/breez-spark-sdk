@@ -2,9 +2,11 @@ use std::{env, fs, io};
 
 use anyhow::{Context, Result, bail};
 use breez_sdk_spark::{
-    ChainApiType, EventListener, GetInfoRequest, Network, SdkBuilder, SdkEvent, Seed,
-    SparkConfig, SparkSigningOperator, SparkSspConfig, default_config,
+    BreezSdk, ChainApiType, EventListener, GetInfoRequest, Network, PaymentType,
+    ReceivePaymentMethod, ReceivePaymentRequest, SdkBuilder, SdkEvent, Seed, SparkConfig,
+    SparkSigningOperator, SparkSspConfig, default_config,
 };
+use tokio::{sync::mpsc, task};
 use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
 
 const LOCAL_OPERATOR_PUBLIC_KEYS: [&str; 5] = [
@@ -15,12 +17,15 @@ const LOCAL_OPERATOR_PUBLIC_KEYS: [&str; 5] = [
     "02c05c88cc8fc181b1ba30006df6a4b0597de6490e24514fbdd0266d2b9cd3d0ba",
 ];
 
-struct ConsoleEventListener;
+struct ConsoleEventListener {
+    event_sender: mpsc::UnboundedSender<SdkEvent>,
+}
 
 #[async_trait::async_trait]
 impl EventListener for ConsoleEventListener {
     async fn on_event(&self, event: SdkEvent) {
         println!("sdk_event: {event}");
+        let _ = self.event_sender.send(event);
     }
 }
 
@@ -55,7 +60,7 @@ async fn main() -> Result<()> {
         mnemonic,
         passphrase,
     };
-    let mut config = default_config(Network::Regtest);
+    let mut config = default_config(Network::Local);
     config.api_key = None;
     config.real_time_sync_server_url = None;
     config.lnurl_domain = None;
@@ -68,29 +73,84 @@ async fn main() -> Result<()> {
         .build()
         .await?;
 
-    let listener_id = sdk.add_event_listener(Box::new(ConsoleEventListener)).await;
+    let (event_sender, mut event_receiver) = mpsc::unbounded_channel();
+    let listener_id = sdk
+        .add_event_listener(Box::new(ConsoleEventListener { event_sender }))
+        .await;
     let info = sdk
         .get_info(GetInfoRequest {
             ensure_synced: Some(wait_for_sync),
         })
         .await?;
+    let spark_address = sdk
+        .receive_payment(ReceivePaymentRequest {
+            payment_method: ReceivePaymentMethod::SparkAddress,
+        })
+        .await?
+        .payment_request;
 
     println!("Spark wallet loaded.");
     println!("storage_dir: {storage_dir}");
     println!("electrs_url: {electrs_url}");
     println!("identity_pubkey: {}", info.identity_pubkey);
+    println!("spark_address: {spark_address}");
     println!("balance_sats: {}", info.balance_sats);
+    println!("token_balances: {:?}", info.token_balances);
     println!(
         "Watching server event stream. Heartbeat warnings will show as 'Received empty event, skipping'."
     );
     println!("Press Enter to disconnect and exit.");
 
-    let mut line = String::new();
-    io::stdin().read_line(&mut line)?;
+    let enter_task = task::spawn_blocking(|| {
+        let mut line = String::new();
+        io::stdin().read_line(&mut line)
+    });
+    tokio::pin!(enter_task);
+
+    loop {
+        tokio::select! {
+            read_result = &mut enter_task => {
+                read_result
+                    .context("failed waiting for Enter")?
+                    .context("failed to read stdin")?;
+                break;
+            }
+            Some(event) = event_receiver.recv() => {
+                if let Some(context) = balance_log_context(&event) {
+                    log_wallet_balance(&sdk, &context).await?;
+                }
+            }
+        }
+    }
 
     let _ = sdk.remove_event_listener(&listener_id).await;
     sdk.disconnect().await?;
     Ok(())
+}
+
+async fn log_wallet_balance(sdk: &BreezSdk, context: &str) -> Result<()> {
+    let info = sdk
+        .get_info(GetInfoRequest {
+            ensure_synced: Some(false),
+        })
+        .await?;
+    println!(
+        "{context}: balance_sats={}, token_balances={:?}",
+        info.balance_sats, info.token_balances
+    );
+    Ok(())
+}
+
+fn balance_log_context(event: &SdkEvent) -> Option<String> {
+    match event {
+        SdkEvent::PaymentSucceeded { payment } if payment.payment_type == PaymentType::Receive => {
+            Some(format!(
+                "received payment settled: id={}, method={}, amount={}",
+                payment.id, payment.method, payment.amount
+            ))
+        }
+        _ => None,
+    }
 }
 
 fn init_console_logging(log_filter: &str) -> Result<()> {

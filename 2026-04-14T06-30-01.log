@@ -1,0 +1,75 @@
+~/src/breez/spark-sdk test-heartbeat-updates cargo run -p breez-sdk-spark --example watch_local_spark_stream
+ Compiling spark v0.1.0 (/Users/corey/src/breez/spark-sdk/crates/spark)
+   Compiling breez-sdk-spark v0.1.0 (/Users/corey/src/breez/spark-sdk/crates/breez-sdk/core)
+   Compiling spark-wallet v0.1.0 (/Users/corey/src/breez/spark-sdk/crates/spark-wallet)
+   Compiling spark-postgres v0.1.0 (/Users/corey/src/breez/spark-sdk/crates/spark-postgres)
+   Compiling flashnet v0.1.0 (/Users/corey/src/breez/spark-sdk/crates/flashnet)
+   Compiling breez-sdk-common v0.1.0 (/Users/corey/src/breez/spark-sdk/crates/breez-sdk/common)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 27.06s
+     Running `target/debug/examples/watch_local_spark_stream`
+2026-04-14T06:30:01.239373Z  INFO breez_sdk_spark::sdk_builder: 490: Building sdk with user agent: breez-sdk-spark/0.13.1-9-g3f268c0
+2026-04-14T06:30:01.246582Z  INFO breez_sdk_spark::sdk::init: 117: Spark private mode initialized: no changes needed
+Spark wallet loaded.
+storage_dir: /tmp/breez-local-wallet
+electrs_url: http://mempool.minikube.local/api
+identity_pubkey: 02698b27ac308b275671b3ca25436346469d04a5bba578ae39feba1d65897a6abc
+spark_address: sparkl1pgssy6vty7krpze82ecm8j39gd35v35aqjjmhftc4culawsavkyh564uah6j8x
+balance_sats: 0
+token_balances: {}
+Watching server event stream. Heartbeat warnings will show as 'Received empty event, skipping'.
+Press Enter to disconnect and exit.
+2026-04-14T06:30:01.282335Z  INFO spark_wallet::wallet: 2278: Starting automatic token output optimization with interval: 120s
+2026-04-14T06:30:01.282442Z  INFO breez_sdk_spark::sdk::sync: 57: Received event: StreamConnected
+2026-04-14T06:30:01.282465Z  INFO breez_sdk_spark::sdk::sync: 112: Stream connected
+2026-04-14T06:30:01.284334Z  INFO breez_sdk_spark::sdk::sync: 57: Received event: Synced
+2026-04-14T06:30:01.284364Z  INFO breez_sdk_spark::sdk::sync: 118: Synced
+2026-04-14T06:30:01.284406Z  INFO breez_sdk_spark::sdk::sync: 70: Sync trigger changed: SyncRequest { sync_type: SyncType(Wallet | WalletState | Deposits | LnurlMetadata), reply: Mutex { data: Some(Sender { inner: Some(Inner { state: State { is_complete: false, is_closed: false, is_rx_task_set: true, is_tx_task_set: false } }) }) }, force: true }
+2026-04-14T06:30:01.286034Z  INFO breez_sdk_spark::utils::deposit_chain_syncer: 46: Syncing deposit UTXOs via identity
+2026-04-14T06:30:01.293516Z  INFO breez_sdk_spark::sdk::sync: 499: background claim completed, unclaimed deposits: []
+2026-04-14T06:30:01.296723Z  INFO breez_sdk_spark::sdk::helpers: 104: Balance updated successfully 0 for identity 02698b27ac308b275671b3ca25436346469d04a5bba578ae39feba1d65897a6abc
+2026-04-14T06:30:01.297056Z  INFO breez_sdk_spark::sync: 64: Syncing payments to storage, offset = 0
+2026-04-14T06:30:01.300308Z ERROR breez_sdk_spark::sdk::sync: 323: sync_wallet_internal: Failed to sync wallet state to storage in 4.559667ms: SparkError("SSP error: network error: Connect error: IoError(Os { code: 61, kind: ConnectionRefused, message: \"Connection refused\" }) (code: None)")
+2026-04-14T06:30:01.300356Z  INFO breez_sdk_spark::sdk::sync: 401: sync_wallet_internal: Wallet sync completed in 14.899583ms: InternalSyncedEvent { wallet: true, wallet_state: false, deposits: true, lnurl_metadata: true, storage_incoming: None }
+sdk_event: Synced
+2026-04-14T06:30:06.280884Z  WARN spark::events::server_stream: 81: Received empty event, skipping
+2026-04-14T06:30:11.280213Z  WARN spark::events::server_stream: 81: Received empty event, skipping
+2026-04-14T06:30:16.283606Z  WARN spark::events::server_stream: 81: Received empty event, skipping
+2026-04-14T06:30:19.570310Z  INFO spark_wallet::wallet: 2146: Processing transfer event: Transfer
+2026-04-14T06:30:19.577174Z  INFO breez_sdk_spark::sdk::sync: 57: Received event: TransferClaimStarting(019d8aaf-05dd-7b97-bff5-2147dd5430ba)
+2026-04-14T06:30:19.577212Z  INFO breez_sdk_spark::sdk::sync: 151: Transfer claim starting
+2026-04-14T06:30:19.579098Z  INFO breez_sdk_spark::utils::payments: 26: Emitting payment event: Payment { id: "019d8aaf-05dd-7b97-bff5-2147dd5430ba", payment_type: Receive, status: Pending, amount: 100000, fees: 0, timestamp: 1776148219, method: Spark, details: Some(Spark { invoice_details: None, htlc_details: None, conversion_info: None }), conversion_details: None }
+sdk_event: PaymentPending: Payment { id: "019d8aaf-05dd-7b97-bff5-2147dd5430ba", payment_type: Receive, status: Pending, amount: 100000, fees: 0, timestamp: 1776148219, method: Spark, details: Some(Spark { invoice_details: None, htlc_details: None, conversion_info: None }), conversion_details: None }
+2026-04-14T06:30:19.579210Z  INFO breez_sdk_spark::sdk::sync: 70: Sync trigger changed: SyncRequest { sync_type: SyncType(WalletState), reply: Mutex { data: Some(Sender { inner: Some(Inner { state: State { is_complete: false, is_closed: false, is_rx_task_set: true, is_tx_task_set: false } }) }) }, force: true }
+2026-04-14T06:30:19.580351Z  INFO breez_sdk_spark::sdk::helpers: 104: Balance updated successfully 0 for identity 02698b27ac308b275671b3ca25436346469d04a5bba578ae39feba1d65897a6abc
+2026-04-14T06:30:19.580877Z  INFO breez_sdk_spark::sync: 64: Syncing payments to storage, offset = 0
+2026-04-14T06:30:19.588303Z ERROR breez_sdk_spark::sdk::sync: 323: sync_wallet_internal: Failed to sync wallet state to storage in 9.039667ms: SparkError("SSP error: network error: Connect error: IoError(Os { code: 61, kind: ConnectionRefused, message: \"Connection refused\" }) (code: None)")
+2026-04-14T06:30:19.588332Z  INFO breez_sdk_spark::sdk::sync: 401: sync_wallet_internal: Wallet sync completed in 9.083583ms: InternalSyncedEvent { wallet: false, wallet_state: false, deposits: false, lnurl_metadata: false, storage_incoming: None }
+2026-04-14T06:30:19.672620Z  INFO breez_sdk_spark::sdk::sync: 57: Received event: TransferClaimed(019d8aaf-05dd-7b97-bff5-2147dd5430ba)
+2026-04-14T06:30:19.672662Z  INFO breez_sdk_spark::sdk::sync: 124: Transfer claimed
+2026-04-14T06:30:19.674766Z  INFO breez_sdk_spark::sdk::helpers: 104: Balance updated successfully 100000 for identity 02698b27ac308b275671b3ca25436346469d04a5bba578ae39feba1d65897a6abc
+2026-04-14T06:30:19.675247Z  INFO breez_sdk_spark::utils::payments: 26: Emitting payment event: Payment { id: "019d8aaf-05dd-7b97-bff5-2147dd5430ba", payment_type: Receive, status: Completed, amount: 100000, fees: 0, timestamp: 1776148219, method: Spark, details: Some(Spark { invoice_details: None, htlc_details: None, conversion_info: None }), conversion_details: None }
+sdk_event: PaymentSucceeded: Payment { id: "019d8aaf-05dd-7b97-bff5-2147dd5430ba", payment_type: Receive, status: Completed, amount: 100000, fees: 0, timestamp: 1776148219, method: Spark, details: Some(Spark { invoice_details: None, htlc_details: None, conversion_info: None }), conversion_details: None }
+received payment settled: id=019d8aaf-05dd-7b97-bff5-2147dd5430ba, method=spark, amount=100000: balance_sats=100000, token_balances={}
+2026-04-14T06:30:19.676259Z  INFO breez_sdk_spark::sdk::helpers: 104: Balance updated successfully 100000 for identity 02698b27ac308b275671b3ca25436346469d04a5bba578ae39feba1d65897a6abc
+2026-04-14T06:30:19.676276Z  INFO breez_sdk_spark::sdk::helpers: 75: Balance updated successfully
+2026-04-14T06:30:19.676305Z  INFO breez_sdk_spark::sdk::sync: 57: Received event: Optimization(Started { total_rounds: 1 })
+2026-04-14T06:30:19.676316Z  INFO breez_sdk_spark::sdk::sync: 169: Optimization event: Started { total_rounds: 1 }
+2026-04-14T06:30:19.676346Z  INFO breez_sdk_spark::sdk::sync: 70: Sync trigger changed: SyncRequest { sync_type: SyncType(WalletState), reply: Mutex { data: Some(Sender { inner: Some(Inner { state: State { is_complete: false, is_closed: false, is_rx_task_set: true, is_tx_task_set: false } }) }) }, force: true }
+2026-04-14T06:30:19.677025Z  INFO breez_sdk_spark::sdk::helpers: 104: Balance updated successfully 100000 for identity 02698b27ac308b275671b3ca25436346469d04a5bba578ae39feba1d65897a6abc
+2026-04-14T06:30:19.677301Z  INFO breez_sdk_spark::sync: 64: Syncing payments to storage, offset = 0
+2026-04-14T06:30:19.682574Z ERROR breez_sdk_spark::sdk::sync: 323: sync_wallet_internal: Failed to sync wallet state to storage in 6.195917ms: SparkError("SSP error: network error: Connect error: IoError(Os { code: 61, kind: ConnectionRefused, message: \"Connection refused\" }) (code: None)")
+2026-04-14T06:30:19.682607Z  INFO breez_sdk_spark::sdk::sync: 401: sync_wallet_internal: Wallet sync completed in 6.236792ms: InternalSyncedEvent { wallet: false, wallet_state: false, deposits: false, lnurl_metadata: false, storage_incoming: None }
+2026-04-14T06:30:19.751446Z ERROR spark::services::leaf_optimizer: 221: Leaf optimization failed: Generic("Failed to perform swap in optimization round 1: ServiceProviderError(Network { reason: \"Connect error: IoError(Os { code: 61, kind: ConnectionRefused, message: \\\"Connection refused\\\" })\", code: None })")
+2026-04-14T06:30:19.751493Z  INFO breez_sdk_spark::sdk::sync: 57: Received event: Optimization(Failed { error: "generic error: Failed to perform swap in optimization round 1: ServiceProviderError(Network { reason: \"Connect error: IoError(Os { code: 61, kind: ConnectionRefused, message: \\\"Connection refused\\\" })\", code: None })" })
+2026-04-14T06:30:19.751502Z  INFO breez_sdk_spark::sdk::sync: 169: Optimization event: Failed { error: "generic error: Failed to perform swap in optimization round 1: ServiceProviderError(Network { reason: \"Connect error: IoError(Os { code: 61, kind: ConnectionRefused, message: \\\"Connection refused\\\" })\", code: None })" }
+2026-04-14T06:30:21.283528Z  WARN spark::events::server_stream: 81: Received empty event, skipping
+2026-04-14T06:30:26.285580Z  WARN spark::events::server_stream: 81: Received empty event, skipping
+2026-04-14T06:30:31.283977Z  WARN spark::events::server_stream: 81: Received empty event, skipping
+2026-04-14T06:30:36.281658Z  WARN spark::events::server_stream: 81: Received empty event, skipping
+2026-04-14T06:30:41.284074Z  WARN spark::events::server_stream: 81: Received empty event, skipping
+2026-04-14T06:30:46.282417Z  WARN spark::events::server_stream: 81: Received empty event, skipping
+2026-04-14T06:30:51.296102Z  WARN spark::events::server_stream: 81: Received empty event, skipping
+2026-04-14T06:30:56.283940Z  WARN spark::events::server_stream: 81: Received empty event, skipping
+2026-04-14T06:31:01.281966Z  WARN spark::events::server_stream: 81: Received empty event, skipping
+2026-04-14T06:31:06.282687Z  WARN spark::events::server_stream: 81: Received empty event, skipping
+^C

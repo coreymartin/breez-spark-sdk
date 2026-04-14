@@ -54,7 +54,9 @@ impl From<Network> for BitcoinNetwork {
         match network {
             spark_wallet::Network::Mainnet => BitcoinNetwork::Bitcoin,
             spark_wallet::Network::Testnet => BitcoinNetwork::Testnet3,
-            spark_wallet::Network::Regtest => BitcoinNetwork::Regtest,
+            spark_wallet::Network::Regtest | spark_wallet::Network::Local => {
+                BitcoinNetwork::Regtest
+            }
             spark_wallet::Network::Signet => BitcoinNetwork::Signet,
         }
     }

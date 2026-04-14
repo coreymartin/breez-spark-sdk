@@ -14,6 +14,8 @@ pub enum Network {
     Mainnet,
     #[serde(rename = "regtest")]
     Regtest,
+    #[serde(rename = "local")]
+    Local,
     #[serde(rename = "testnet")]
     Testnet,
     #[serde(rename = "signet")]
@@ -25,6 +27,7 @@ impl Display for Network {
         match self {
             Network::Mainnet => write!(f, "mainnet"),
             Network::Regtest => write!(f, "regtest"),
+            Network::Local => write!(f, "local"),
             Network::Testnet => write!(f, "testnet"),
             Network::Signet => write!(f, "signet"),
         }
@@ -38,6 +41,7 @@ impl FromStr for Network {
         match s {
             "mainnet" => Ok(Network::Mainnet),
             "regtest" => Ok(Network::Regtest),
+            "local" => Ok(Network::Local),
             "testnet" => Ok(Network::Testnet),
             "signet" => Ok(Network::Signet),
             _ => Err("Invalid network".to_string()),
@@ -49,7 +53,7 @@ impl Network {
     pub(crate) fn to_proto_network(self) -> operator_rpc::spark::Network {
         match self {
             Network::Mainnet => operator_rpc::spark::Network::Mainnet,
-            Network::Regtest => operator_rpc::spark::Network::Regtest,
+            Network::Regtest | Network::Local => operator_rpc::spark::Network::Regtest,
             Network::Testnet => operator_rpc::spark::Network::Testnet,
             Network::Signet => operator_rpc::spark::Network::Signet,
         }
@@ -72,7 +76,7 @@ impl From<Network> for bitcoin::Network {
     fn from(network: Network) -> Self {
         match network {
             Network::Mainnet => bitcoin::Network::Bitcoin,
-            Network::Regtest => bitcoin::Network::Regtest,
+            Network::Regtest | Network::Local => bitcoin::Network::Regtest,
             Network::Testnet => bitcoin::Network::Testnet,
             Network::Signet => bitcoin::Network::Signet,
         }
@@ -97,7 +101,9 @@ impl From<Network> for bitcoin::NetworkKind {
     fn from(network: Network) -> Self {
         match network {
             Network::Mainnet => bitcoin::NetworkKind::Main,
-            _ => bitcoin::NetworkKind::Test,
+            Network::Regtest | Network::Local | Network::Testnet | Network::Signet => {
+                bitcoin::NetworkKind::Test
+            }
         }
     }
 }
